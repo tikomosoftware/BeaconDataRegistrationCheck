@@ -11,12 +11,27 @@ const stackItems = [
 export default function AboutPage() {
   return (
     <main className="shell">
-      <section className="workspace aboutWorkspace">
-        <nav className="topNav" aria-label="Main navigation">
-          <Link href="/">Tester</Link>
-          <Link href="/about">About</Link>
-        </nav>
+      <header className="siteHeader">
+        <div className="siteHeaderInner">
+          <Link className="brandMark" href="/" aria-label="Beacon API home">
+            <span className="brandIcon" aria-hidden="true">
+              B
+            </span>
+            <span>
+              <strong>Beacon Data Registration Check</strong>
+            </span>
+          </Link>
 
+          <nav className="topNav" aria-label="Main navigation">
+            <Link href="/">Tester</Link>
+            <Link className="active" href="/about">
+              About
+            </Link>
+          </nav>
+        </div>
+      </header>
+
+      <section className="workspace aboutWorkspace">
         <div className="heading">
           <p className="eyebrow">Project Overview</p>
           <h1>About This Beacon API</h1>

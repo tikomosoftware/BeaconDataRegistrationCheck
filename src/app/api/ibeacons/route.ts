@@ -11,6 +11,28 @@ type IBeaconRequestBody = {
 
 const tableName = process.env.SUPABASE_IBEACON_TABLE ?? "ibeacons";
 
+function maskUuid(value: string) {
+  const trimmedValue = value.trim();
+  const visibleLength = 18;
+
+  if (trimmedValue.length <= visibleLength) {
+    return trimmedValue;
+  }
+
+  return `${trimmedValue.slice(0, visibleLength)}******************`;
+}
+
+function maskRecordUuid<T extends { uuid?: unknown }>(record: T) {
+  if (typeof record.uuid !== "string") {
+    return record;
+  }
+
+  return {
+    ...record,
+    uuid: maskUuid(record.uuid)
+  };
+}
+
 function toInteger(value: unknown) {
   if (typeof value === "number" && Number.isInteger(value)) {
     return value;
@@ -97,7 +119,7 @@ export async function GET() {
     );
   }
 
-  return NextResponse.json({ ok: true, data });
+  return NextResponse.json({ ok: true, data: data?.map(maskRecordUuid) ?? [] });
 }
 
 export async function POST(request: NextRequest) {
@@ -148,5 +170,5 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  return NextResponse.json({ ok: true, data }, { status: 201 });
+  return NextResponse.json({ ok: true, data: maskRecordUuid(data) }, { status: 201 });
 }

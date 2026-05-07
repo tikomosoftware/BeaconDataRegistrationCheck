@@ -58,6 +58,17 @@ function toDateFilterValue(value: string) {
   return `${year}-${month}-${day}`;
 }
 
+function maskUuid(value: string) {
+  const trimmedValue = value.trim();
+  const visibleLength = 18;
+
+  if (trimmedValue.length <= visibleLength) {
+    return trimmedValue;
+  }
+
+  return `${trimmedValue.slice(0, visibleLength)}******************`;
+}
+
 export default function Home() {
   const [date, setDate] = useState("");
   const [uuid, setUuid] = useState(sampleUuid);
@@ -71,6 +82,17 @@ export default function Home() {
   const [filters, setFilters] = useState<RecordFilters>(emptyFilters);
 
   const requestPreview = useMemo(
+    () => ({
+      date,
+      uuid: maskUuid(uuid),
+      major: Number(major),
+      minor: Number(minor),
+      comment
+    }),
+    [comment, date, major, minor, uuid]
+  );
+
+  const requestPayload = useMemo(
     () => ({
       date,
       uuid,
@@ -160,7 +182,7 @@ export default function Home() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify(requestPreview)
+        body: JSON.stringify(requestPayload)
       });
       const json = await response.json();
 
@@ -201,17 +223,27 @@ export default function Home() {
 
   return (
     <main className="shell">
-      <section className="workspace">
-        <nav className="topNav" aria-label="Main navigation">
-          <Link href="/">Tester</Link>
-          <Link href="/about">About</Link>
-        </nav>
+      <header className="siteHeader">
+        <div className="siteHeaderInner">
+          <Link className="brandMark" href="/" aria-label="Beacon API home">
+            <span className="brandIcon" aria-hidden="true">
+              B
+            </span>
+            <span>
+              <strong>Beacon Data Registration Check</strong>
+            </span>
+          </Link>
 
-        <div className="heading">
-          <p className="eyebrow">Vercel API Route + Supabase</p>
-          <h1>Beacon Data Registration Check</h1>
+          <nav className="topNav" aria-label="Main navigation">
+            <Link className="active" href="/">
+              Tester
+            </Link>
+            <Link href="/about">About</Link>
+          </nav>
         </div>
+      </header>
 
+      <section className="workspace">
         <div className="noticeBox" role="note">
           <strong>このWebアプリについて</strong>
           <p>
