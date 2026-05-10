@@ -1,5 +1,7 @@
 # Beacon Data Registration Check
 
+![version](https://img.shields.io/badge/version-0.2.0-blue)
+
 iBeacon形式のデータを Next.js API Route 経由で Supabase に登録し、登録済みデータを画面上で確認するための技術検証用アプリです。
 
 ## Features

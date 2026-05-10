@@ -576,6 +576,13 @@ export default function Home() {
           </section>
         </div>
       </section>
+
+      <footer className="siteFooter">
+        <div className="siteFooterInner">
+          <span>&copy; 2025 tikomo software</span>
+          <span>Personal verification tool</span>
+        </div>
+      </footer>
     </main>
   );
 }

@@ -67,8 +67,26 @@ export default function AboutPage() {
               <li>The API returns the inserted record for confirmation.</li>
             </ol>
           </section>
+
+          <section className="panel aboutPanel widePanel">
+            <h2>免責事項</h2>
+            <ul className="disclaimerList">
+              <li>このWebアプリは個人が技術検証目的で作成・運用しているものです。商用サービスではありません。</li>
+              <li>データの永続性・可用性について保証はありません。予告なくデータが削除される場合があります。</li>
+              <li>本ツールの利用により生じた損害について、開発者は一切の責任を負いません。</li>
+              <li>登録されたデータは検証目的でのみ使用し、第三者への提供は行いません。</li>
+              <li>サーバーやデータベースは予告なく停止・変更される場合があります。</li>
+            </ul>
+          </section>
         </div>
       </section>
+
+      <footer className="siteFooter">
+        <div className="siteFooterInner">
+          <span>&copy; 2025 tikomo software</span>
+          <span>Personal verification tool</span>
+        </div>
+      </footer>
     </main>
   );
 }
