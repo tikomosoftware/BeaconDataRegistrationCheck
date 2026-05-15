@@ -383,6 +383,12 @@ tbody tr:last-child td {
   word-break: break-all;
 }
 
+.narrowCell {
+  width: 60px;
+  min-width: 60px;
+  max-width: 60px;
+}
+
 pre {
   overflow: auto;
   max-height: 360px;

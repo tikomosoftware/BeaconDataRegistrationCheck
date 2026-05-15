@@ -477,7 +477,7 @@ export default function Home() {
                             placeholder="Filter"
                           />
                         </th>
-                        <th>
+                        <th className="narrowCell">
                           <span>Major</span>
                           <input
                             aria-label="Filter major"
@@ -489,7 +489,7 @@ export default function Home() {
                             placeholder="Filter"
                           />
                         </th>
-                        <th>
+                        <th className="narrowCell">
                           <span>Minor</span>
                           <input
                             aria-label="Filter minor"
@@ -604,7 +604,7 @@ export default function Home() {
                           placeholder="Filter"
                         />
                       </th>
-                      <th>
+                      <th className="narrowCell">
                         <span>Major</span>
                         <input
                           aria-label="Filter major"
@@ -616,7 +616,7 @@ export default function Home() {
                           placeholder="Filter"
                         />
                       </th>
-                      <th>
+                      <th className="narrowCell">
                         <span>Minor</span>
                         <input
                           aria-label="Filter minor"
@@ -684,8 +684,8 @@ export default function Home() {
                         <td>{new Date(record.created_at).toLocaleString()}</td>
                         <td>{new Date(record.date).toLocaleString()}</td>
                         <td className="uuidCell">{record.uuid}</td>
-                        <td>{record.major}</td>
-                        <td>{record.minor}</td>
+                        <td className="narrowCell">{record.major}</td>
+                        <td className="narrowCell">{record.minor}</td>
                         <td>{record.comment ?? ""}</td>
                         <td>{record.user_id ?? ""}</td>
                         <td>{record.user_name ?? ""}</td>
