@@ -7,6 +7,9 @@ type IBeaconRequestBody = {
   major?: unknown;
   minor?: unknown;
   comment?: unknown;
+  userId?: unknown;
+  userName?: unknown;
+  department?: unknown;
 };
 
 const tableName = process.env.SUPABASE_IBEACON_TABLE ?? "ibeacons";
@@ -58,6 +61,18 @@ function validateBody(body: IBeaconRequestBody) {
     typeof body.comment === "string" && body.comment.trim() !== ""
       ? body.comment.trim()
       : null;
+  const userId =
+    typeof body.userId === "string" && body.userId.trim() !== ""
+      ? body.userId.trim()
+      : null;
+  const userName =
+    typeof body.userName === "string" && body.userName.trim() !== ""
+      ? body.userName.trim()
+      : null;
+  const department =
+    typeof body.department === "string" && body.department.trim() !== ""
+      ? body.department.trim()
+      : null;
 
   if (!date || Number.isNaN(Date.parse(date))) {
     errors.push("date must be an ISO date string");
@@ -86,7 +101,10 @@ function validateBody(body: IBeaconRequestBody) {
       uuid,
       major: major as number,
       minor: minor as number,
-      comment
+      comment,
+      user_id:    userId,
+      user_name:  userName,
+      department,
     }
   };
 }
@@ -108,7 +126,7 @@ export async function GET() {
 
   const { data, error } = await supabaseAdmin
     .from(tableName)
-    .select("id,date,uuid,major,minor,comment,created_at")
+    .select("id,date,uuid,major,minor,comment,user_id,user_name,department,created_at")
     .order("created_at", { ascending: false })
     .limit(20);
 

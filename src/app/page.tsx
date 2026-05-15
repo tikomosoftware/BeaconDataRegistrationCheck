@@ -17,6 +17,9 @@ type IBeaconRecord = {
   minor: number;
   comment: string | null;
   created_at: string;
+  user_id: string | null;
+  user_name: string | null;
+  department: string | null;
 };
 
 type RecordsState =
@@ -31,6 +34,9 @@ type RecordFilters = {
   major: string;
   minor: string;
   comment: string;
+  user_id: string;
+  user_name: string;
+  department: string;
 };
 
 const sampleUuid = "74278bda-b644-4520-8f0c-720eaf059935";
@@ -41,7 +47,10 @@ const emptyFilters: RecordFilters = {
   uuid: "",
   major: "",
   minor: "",
-  comment: ""
+  comment: "",
+  user_id: "",
+  user_name: "",
+  department: ""
 };
 
 function toDateFilterValue(value: string) {
@@ -75,6 +84,9 @@ export default function Home() {
   const [major, setMajor] = useState("1");
   const [minor, setMinor] = useState("1");
   const [comment, setComment] = useState("Web test");
+  const [userId, setUserId] = useState("U001");
+  const [userName, setUserName] = useState("山田 太郎");
+  const [department, setDepartment] = useState("営業部");
   const [apiState, setApiState] = useState<ApiState>({ status: "idle" });
   const [recordsState, setRecordsState] = useState<RecordsState>({
     status: "loading"
@@ -87,9 +99,12 @@ export default function Home() {
       uuid: maskUuid(uuid),
       major: Number(major),
       minor: Number(minor),
-      comment
+      comment,
+      userId,
+      userName,
+      department,
     }),
-    [comment, date, major, minor, uuid]
+    [comment, date, major, minor, uuid, userId, userName, department]
   );
 
   const requestPayload = useMemo(
@@ -98,9 +113,12 @@ export default function Home() {
       uuid,
       major: Number(major),
       minor: Number(minor),
-      comment
+      comment,
+      userId,
+      userName,
+      department,
     }),
-    [comment, date, major, minor, uuid]
+    [comment, date, major, minor, uuid, userId, userName, department]
   );
 
   const filteredRecords = useMemo(() => {
@@ -122,7 +140,10 @@ export default function Home() {
         uuid: record.uuid.toLowerCase(),
         major: String(record.major),
         minor: String(record.minor),
-        comment: (record.comment ?? "").toLowerCase()
+        comment: (record.comment ?? "").toLowerCase(),
+        user_id: (record.user_id ?? "").toLowerCase(),
+        user_name: (record.user_name ?? "").toLowerCase(),
+        department: (record.department ?? "").toLowerCase()
       };
 
       return Object.entries(normalizedFilters).every(([key, value]) => {
@@ -314,6 +335,33 @@ export default function Home() {
               />
             </label>
 
+            <label>
+              <span>User ID</span>
+              <input
+                type="text"
+                value={userId}
+                onChange={(event) => setUserId(event.target.value)}
+              />
+            </label>
+
+            <label>
+              <span>User Name</span>
+              <input
+                type="text"
+                value={userName}
+                onChange={(event) => setUserName(event.target.value)}
+              />
+            </label>
+
+            <label>
+              <span>Department</span>
+              <input
+                type="text"
+                value={department}
+                onChange={(event) => setDepartment(event.target.value)}
+              />
+            </label>
+
             <button
               className="submitButton"
               disabled={apiState.status === "loading"}
@@ -465,6 +513,42 @@ export default function Home() {
                             placeholder="Filter"
                           />
                         </th>
+                        <th>
+                          <span>User ID</span>
+                          <input
+                            aria-label="Filter user ID"
+                            className="filterInput"
+                            value={filters.user_id}
+                            onChange={(event) =>
+                              updateFilter("user_id", event.target.value)
+                            }
+                            placeholder="Filter"
+                          />
+                        </th>
+                        <th>
+                          <span>User Name</span>
+                          <input
+                            aria-label="Filter user name"
+                            className="filterInput"
+                            value={filters.user_name}
+                            onChange={(event) =>
+                              updateFilter("user_name", event.target.value)
+                            }
+                            placeholder="Filter"
+                          />
+                        </th>
+                        <th>
+                          <span>Department</span>
+                          <input
+                            aria-label="Filter department"
+                            className="filterInput"
+                            value={filters.department}
+                            onChange={(event) =>
+                              updateFilter("department", event.target.value)
+                            }
+                            placeholder="Filter"
+                          />
+                        </th>
                       </tr>
                     </thead>
                   </table>
@@ -556,6 +640,42 @@ export default function Home() {
                           placeholder="Filter"
                         />
                       </th>
+                      <th>
+                        <span>User ID</span>
+                        <input
+                          aria-label="Filter user ID"
+                          className="filterInput"
+                          value={filters.user_id}
+                          onChange={(event) =>
+                            updateFilter("user_id", event.target.value)
+                          }
+                          placeholder="Filter"
+                        />
+                      </th>
+                      <th>
+                        <span>User Name</span>
+                        <input
+                          aria-label="Filter user name"
+                          className="filterInput"
+                          value={filters.user_name}
+                          onChange={(event) =>
+                            updateFilter("user_name", event.target.value)
+                          }
+                          placeholder="Filter"
+                        />
+                      </th>
+                      <th>
+                        <span>Department</span>
+                        <input
+                          aria-label="Filter department"
+                          className="filterInput"
+                          value={filters.department}
+                          onChange={(event) =>
+                            updateFilter("department", event.target.value)
+                          }
+                          placeholder="Filter"
+                        />
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -567,6 +687,9 @@ export default function Home() {
                         <td>{record.major}</td>
                         <td>{record.minor}</td>
                         <td>{record.comment ?? ""}</td>
+                        <td>{record.user_id ?? ""}</td>
+                        <td>{record.user_name ?? ""}</td>
+                        <td>{record.department ?? ""}</td>
                       </tr>
                     ))}
                   </tbody>

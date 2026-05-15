@@ -44,7 +44,10 @@ export async function GET(request: NextRequest) {
       uuid: lifeCheckUuid,
       major: 0,
       minor: 0,
-      comment: "daily life check"
+      comment: "daily life check",
+      user_id: null,
+      user_name: null,
+      department: null,
     })
     .select()
     .single();
