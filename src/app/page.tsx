@@ -268,7 +268,7 @@ export default function Home() {
         <div className="noticeBox" role="note">
           <strong>このWebアプリについて</strong>
           <p>
-            このWebアプリは技術検証用に作成したものです。個人でSupabaseへの登録や表示の動作確認をしたいことがあり、確認用のサーバーを立てています。
+            このWebアプリは技術検証用に作成したものです。個人でTiDB Cloudへの登録や表示の動作確認をしたいことがあり、確認用のサーバーを立てています。
           </p>
           <p>
             「Send to API」ボタンを押すと実際にデータが登録されるため、必要なとき以外はあまり押さないでください。

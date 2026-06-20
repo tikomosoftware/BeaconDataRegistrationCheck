@@ -3,7 +3,7 @@ import "./styles.css";
 
 export const metadata: Metadata = {
   title: "Beacon Data Registration Check",
-  description: "Submit iBeacon data to Supabase through a Vercel API route."
+  description: "Submit iBeacon data to TiDB Cloud through a Vercel API route."
 };
 
 export default function RootLayout({

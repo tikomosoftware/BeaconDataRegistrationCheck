@@ -1,3 +1,3 @@
-export function createSupabaseAdminClient(): never {
-  throw new Error("Supabase access has been replaced by TiDB. Use src/lib/tidb.ts instead.");
+export function createLegacyDatabaseClient(): never {
+  throw new Error("Legacy database access has been replaced by TiDB. Use src/lib/tidb.ts instead.");
 }
