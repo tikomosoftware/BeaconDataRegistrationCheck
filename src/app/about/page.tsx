@@ -3,8 +3,8 @@ import Link from "next/link";
 const stackItems = [
   ["Frontend", "Next.js App Router, React, TypeScript"],
   ["API", "Next.js Route Handler running on Vercel"],
-  ["Database", "Supabase Postgres"],
-  ["Data access", "@supabase/supabase-js with a server-side secret key"],
+  ["Database", "TiDB Cloud Starter"],
+  ["Data access", "mysql2 with server-side TiDB credentials"],
   ["Mobile client plan", "Flutter app calling the Vercel API from Swift/Kotlin"]
 ];
 
@@ -42,7 +42,7 @@ export default function AboutPage() {
             <h2>Purpose</h2>
             <p>
               This tool verifies that beacon payloads can be submitted through
-              a Vercel-hosted REST API and inserted into a Supabase table.
+              a Vercel-hosted REST API and inserted into a TiDB table.
             </p>
           </section>
 
@@ -63,7 +63,7 @@ export default function AboutPage() {
             <ol className="flowList">
               <li>Web or mobile client sends Date, UUID, Major, Minor, and Comment.</li>
               <li>The Vercel API validates the request body.</li>
-              <li>The server-side Supabase client inserts the row into Postgres.</li>
+              <li>The server-side TiDB client inserts the row into TiDB Cloud.</li>
               <li>The API returns the inserted record for confirmation.</li>
             </ol>
           </section>

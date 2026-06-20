@@ -400,7 +400,7 @@ export default function Home() {
             <div className="recordsHeader">
               <div>
                 <h2>Registered Data</h2>
-                <p className="muted">Latest 20 rows from the Supabase table.</p>
+                <p className="muted">Latest 20 rows from the TiDB table.</p>
               </div>
               <button
                 className="refreshButton"

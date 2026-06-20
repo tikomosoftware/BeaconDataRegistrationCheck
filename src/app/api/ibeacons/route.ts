@@ -1,5 +1,15 @@
+import { randomUUID } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
-import { createSupabaseAdminClient } from "@/lib/supabaseAdmin";
+import type { RowDataPacket } from "mysql2";
+import {
+  executeTidb,
+  getBeaconTableName,
+  queryTidbRows,
+  toIsoString,
+  toMysqlDateTime
+} from "@/lib/tidb";
+
+export const runtime = "nodejs";
 
 type IBeaconRequestBody = {
   date?: unknown;
@@ -12,7 +22,34 @@ type IBeaconRequestBody = {
   department?: unknown;
 };
 
-const tableName = process.env.SUPABASE_IBEACON_TABLE ?? "ibeacons";
+type IBeaconDbRow = RowDataPacket & {
+  id: string;
+  date: Date | string;
+  uuid: string;
+  major: number;
+  minor: number;
+  comment: string | null;
+  user_id: string | null;
+  user_name: string | null;
+  department: string | null;
+  created_at: Date | string;
+};
+
+type IBeaconRecord = {
+  id: string;
+  date: string;
+  uuid: string;
+  major: number;
+  minor: number;
+  comment: string | null;
+  user_id: string | null;
+  user_name: string | null;
+  department: string | null;
+  created_at: string;
+};
+
+const selectColumns =
+  "id, `date`, uuid, major, minor, comment, user_id, user_name, department, created_at";
 
 function maskUuid(value: string) {
   const trimmedValue = value.trim();
@@ -34,6 +71,29 @@ function maskRecordUuid<T extends { uuid?: unknown }>(record: T) {
     ...record,
     uuid: maskUuid(record.uuid)
   };
+}
+
+function serializeRecord(record: IBeaconDbRow): IBeaconRecord {
+  return {
+    id: record.id,
+    date: toIsoString(record.date),
+    uuid: record.uuid,
+    major: record.major,
+    minor: record.minor,
+    comment: record.comment,
+    user_id: record.user_id,
+    user_name: record.user_name,
+    department: record.department,
+    created_at: toIsoString(record.created_at)
+  };
+}
+
+function requireRecord(record: IBeaconDbRow | undefined) {
+  if (!record) {
+    throw new Error("Inserted row could not be loaded from TiDB");
+  }
+
+  return record;
 }
 
 function toInteger(value: unknown) {
@@ -97,47 +157,42 @@ function validateBody(body: IBeaconRequestBody) {
   return {
     ok: true as const,
     value: {
-      date: new Date(date).toISOString(),
+      date: new Date(date),
       uuid,
       major: major as number,
       minor: minor as number,
       comment,
-      user_id:    userId,
-      user_name:  userName,
-      department,
+      user_id: userId,
+      user_name: userName,
+      department
     }
   };
 }
 
 export async function GET() {
-  let supabaseAdmin: ReturnType<typeof createSupabaseAdminClient>;
-
   try {
-    supabaseAdmin = createSupabaseAdminClient();
+    const tableName = getBeaconTableName();
+    const rows = await queryTidbRows<IBeaconDbRow[]>(
+      `SELECT ${selectColumns}
+       FROM ${tableName}
+       ORDER BY created_at DESC
+       LIMIT ?`,
+      [20]
+    );
+
+    return NextResponse.json({
+      ok: true,
+      data: rows.map(serializeRecord).map(maskRecordUuid)
+    });
   } catch (error) {
     return NextResponse.json(
       {
         ok: false,
-        errors: [error instanceof Error ? error.message : "Supabase is not set"]
+        errors: [error instanceof Error ? error.message : "TiDB request failed"]
       },
       { status: 500 }
     );
   }
-
-  const { data, error } = await supabaseAdmin
-    .from(tableName)
-    .select("id,date,uuid,major,minor,comment,user_id,user_name,department,created_at")
-    .order("created_at", { ascending: false })
-    .limit(20);
-
-  if (error) {
-    return NextResponse.json(
-      { ok: false, errors: [error.message] },
-      { status: 500 }
-    );
-  }
-
-  return NextResponse.json({ ok: true, data: data?.map(maskRecordUuid) ?? [] });
 }
 
 export async function POST(request: NextRequest) {
@@ -161,32 +216,48 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  let supabaseAdmin: ReturnType<typeof createSupabaseAdminClient>;
-
   try {
-    supabaseAdmin = createSupabaseAdminClient();
+    const tableName = getBeaconTableName();
+    const id = randomUUID();
+    const createdAt = new Date();
+
+    await executeTidb(
+      `INSERT INTO ${tableName}
+        (id, \`date\`, uuid, major, minor, comment, user_id, user_name, department, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        id,
+        toMysqlDateTime(validation.value.date),
+        validation.value.uuid,
+        validation.value.major,
+        validation.value.minor,
+        validation.value.comment,
+        validation.value.user_id,
+        validation.value.user_name,
+        validation.value.department,
+        toMysqlDateTime(createdAt)
+      ]
+    );
+
+    const rows = await queryTidbRows<IBeaconDbRow[]>(
+      `SELECT ${selectColumns}
+       FROM ${tableName}
+       WHERE id = ?
+       LIMIT 1`,
+      [id]
+    );
+
+    return NextResponse.json(
+      { ok: true, data: maskRecordUuid(serializeRecord(requireRecord(rows[0]))) },
+      { status: 201 }
+    );
   } catch (error) {
     return NextResponse.json(
       {
         ok: false,
-        errors: [error instanceof Error ? error.message : "Supabase is not set"]
+        errors: [error instanceof Error ? error.message : "TiDB request failed"]
       },
       { status: 500 }
     );
   }
-
-  const { data, error } = await supabaseAdmin
-    .from(tableName)
-    .insert(validation.value)
-    .select()
-    .single();
-
-  if (error) {
-    return NextResponse.json(
-      { ok: false, errors: [error.message] },
-      { status: 500 }
-    );
-  }
-
-  return NextResponse.json({ ok: true, data: maskRecordUuid(data) }, { status: 201 });
 }
